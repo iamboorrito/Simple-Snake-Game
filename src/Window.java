@@ -1,8 +1,10 @@
 import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
 import java.util.HashSet;
 import java.util.Stack;
 import javax.swing.JFrame;
@@ -14,15 +16,11 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 
-public class Window implements KeyListener {
+public class Window extends FixedStepGame {
 
-	private JFrame frmSnek;
-	private JPanel canvas;
-	protected Timer timer;
 	protected Tile[][] grid;
 	protected Snake snake;
 	protected final int COLUMNS = 20, ROWS = 20;
-	private final int FRAME_DELAY = 100;
 	private Dimension foodTile;
 	private boolean foodSetFlag = false;
 	
@@ -46,45 +44,7 @@ public class Window implements KeyListener {
 	 * Create the application.
 	 */
 	public Window() {
-		initialize();
-	}
-
-	/**
-	 * Initialize the contents of the frame.
-	 */
-	private void initialize() {
-		frmSnek = new JFrame();
-		frmSnek.setTitle("Snek");
-		frmSnek.setBounds(100, 100, 362, 384);
-		frmSnek.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		timer = new Timer(FRAME_DELAY, e->{update();});
-		frmSnek.getContentPane().setLayout(new BorderLayout(0, 0));
-		
-		/*
-		 * Subclass JPanel to override painting.
-		 */
-		canvas = new JPanel(){
-
-			private static final long serialVersionUID = 3285469162805856320L;
-			
-			public void paintComponent(Graphics g){
-				super.paintComponent(g);
-				
-				Graphics2D g2d = (Graphics2D)g;
-				
-				draw(g2d);
-			}
-			
-		};
-		
-		// Set double buffered to true for nice graphics updating.
-		canvas.setDoubleBuffered(true);
-		frmSnek.getContentPane().add(canvas);
-		
-		// Make sure key inputs are listened for
-		frmSnek.addKeyListener(this);
-		
-		initGame();
+		super("Snek", 362, 384);
 	}
 
 	/**
@@ -110,9 +70,7 @@ public class Window implements KeyListener {
 		timer.start();
 	}
 
-	/**
-	 * Updates the game board.
-	 */
+	@Override
 	protected void update() {
 
 		// Clear the snake's tiles
@@ -169,7 +127,8 @@ public class Window implements KeyListener {
 	/**
 	 * Clears snake off the board and resets it to its initial position.
 	 */
-	private void reset() {
+	@Override
+	protected void reset() {
 		
 		// Clear snake tiles on board
 		for(int i = 0; i < snake.size(); i++){
@@ -199,7 +158,7 @@ public class Window implements KeyListener {
 	/**
 	 * Sets the food on the board.
 	 */
-	protected void setFood() {
+	protected synchronized void setFood() {
 		
 		Dimension[] emptyCells = new Dimension[COLUMNS*ROWS];
 		
@@ -231,6 +190,7 @@ public class Window implements KeyListener {
 	/**
 	 * Draws the state onto the canvas
 	 */
+	@Override
 	protected void draw(Graphics2D g) {
 		
 		int width = canvas.getWidth()/COLUMNS;
@@ -250,6 +210,7 @@ public class Window implements KeyListener {
 					break;
 				case SNAKE:
 					g.setColor(Color.BLUE);
+					//g.setColor(new Color((int)(Math.random()*255),(int)(Math.random()*255), (int)(Math.random()*255) ));
 					break;
 				default:
 					break;
@@ -262,9 +223,6 @@ public class Window implements KeyListener {
 			}
 		}
 	}
-
-	@Override
-	public void keyTyped(KeyEvent e) {}
 
 	@Override
 	public void keyPressed(KeyEvent e) {
@@ -280,8 +238,4 @@ public class Window implements KeyListener {
 		snake.setDir(e.getKeyCode());
 		
 	}
-
-	@Override
-	public void keyReleased(KeyEvent e) {}
-
 }
