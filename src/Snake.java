@@ -74,16 +74,20 @@ public class Snake extends ArrayList<Dimension>{
 	public void setDir(int KEY_EVENT){
 		switch(KEY_EVENT){
 		case KeyEvent.VK_LEFT:
-			dir = Dir.LEFT;
+			if(dir != Dir.RIGHT)
+				dir = Dir.LEFT;
 			break;
 		case KeyEvent.VK_RIGHT:
-			dir = Dir.RIGHT;
+			if(dir != Dir.LEFT)
+				dir = Dir.RIGHT;
 			break;
 		case KeyEvent.VK_UP:
-			dir = Dir.UP;
+			if(dir != Dir.DOWN)
+				dir = Dir.UP;
 			break;
 		case KeyEvent.VK_DOWN:
-			dir = Dir.DOWN;
+			if(dir != Dir.UP)
+				dir = Dir.DOWN;
 			break;
 		}
 	}
